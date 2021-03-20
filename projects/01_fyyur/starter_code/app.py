@@ -120,7 +120,7 @@ def search_venues():
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
   search_term=request.form.get('search_term', '')
-  response=Venue.query.filter(Venue.name.like(search_term)).all()
+  response=Venue.query.filter(Venue.name.like('%' + search_term + '%')).all()
   return render_template('pages/search_venues.html', results=response, search_term=search_term)
 
 @app.route('/venues/<int:venue_id>')
