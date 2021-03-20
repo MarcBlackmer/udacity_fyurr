@@ -43,13 +43,16 @@ class Venue(db.Model):
     __tablename__ = 'venue'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String(120), nullable=False)
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
+    seeking_talent = db.Column(db.Boolean, default=True)
+    seeking_description = db.Column(db.String(500))
 #    shows = db.relationship('artist', secondary=shows, backref=db.backref('venue', lazy=True))
 
     def __repr__(self):
@@ -68,6 +71,9 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
+    seeking_venue = db.Column(db.Boolean, default=True)
+    seeking_description = db.Column(db.String(500))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -104,23 +110,18 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  venues = Venue.query.order_by('city').all()
-  return render_template('pages/venues.html', venues=venues)
+  venues = Venue.query.order_by('id').all()
+  areas = Venue.query.distinct('city').all()
+  return render_template('pages/venues.html', venues=venues, areas=areas)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+  search_term=request.form.get('search_term', '')
+  response=Venue.query.filter(Venue.name.like(search_term)).all()
+  return render_template('pages/search_venues.html', results=response, search_term=search_term)
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
