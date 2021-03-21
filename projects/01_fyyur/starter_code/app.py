@@ -128,8 +128,6 @@ def search_venues():
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
-
-  #v_id = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
   venues=Venue.query.filter_by(id=venue_id).all()
   return render_template('pages/show_venue.html', venues=venues)
 
