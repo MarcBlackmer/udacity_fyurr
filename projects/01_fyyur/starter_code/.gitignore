@@ -1,2 +1,5 @@
 # Ignore migration files
 migrations/*
+
+# Ignore issues tracking file
+Fyyur-issues.txt

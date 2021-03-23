@@ -95,6 +95,7 @@ class VenueForm(Form):
             ('Alternative', 'Alternative'),
             ('Blues', 'Blues'),
             ('Classical', 'Classical'),
+            ('Cabaret', 'Cabaret'),
             ('Country', 'Country'),
             ('Electronic', 'Electronic'),
             ('Folk', 'Folk'),
