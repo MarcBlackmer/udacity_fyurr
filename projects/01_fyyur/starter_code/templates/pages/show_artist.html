@@ -1,6 +1,11 @@
 {% extends 'layouts/main.html' %}
-{% block title %}{{ artist.name }} | Artist{% endblock %}
+{% block title %}
+{% for artist in artists %}
+{{ artist.name }} | Artist
+{% endfor %}
+{% endblock %}
 {% block content %}
+{% for artist in artists %}
 <div class="row">
 	<div class="col-sm-6">
 		<h1 class="monospace">
@@ -10,9 +15,7 @@
 			ID: {{ artist.id }}
 		</p>
 		<div class="genres">
-			{% for genre in artist.genres %}
-			<span class="genre">{{ genre }}</span>
-			{% endfor %}
+			<span class="genre">{{ artist.genres }}</span>
 		</div>
 		<p>
 			<i class="fas fa-globe-americas"></i> {{ artist.city }}, {{ artist.state }}
@@ -33,7 +36,7 @@
 				<i class="fas fa-quote-left"></i> {{ artist.seeking_description }} <i class="fas fa-quote-right"></i>
 			</div>
 		</div>
-		{% else %}	
+		{% else %}
 		<p class="not-seeking">
 			<i class="fas fa-moon"></i> Not currently seeking performance venues
 		</p>
@@ -71,8 +74,7 @@
 		{% endfor %}
 	</div>
 </section>
-
 <a href="/artists/{{ artist.id }}/edit"><button class="btn btn-primary btn-lg">Edit</button></a>
-
+<a href="/artists/{{ artist.id }}/delete"><button class="btn btn-primary btn-lg">Delete</button></a>
+{% endfor %}
 {% endblock %}
-
