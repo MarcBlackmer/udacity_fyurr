@@ -176,14 +176,27 @@ def create_venue_submission():
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
   return render_template('pages/home.html')
 
-@app.route('/venues/<venue_id>', methods=['DELETE'])
+@app.route('/venues/<venue_id>/delete', methods=['DELETE', 'GET'])
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  error=False
+  try:
+    Venue.query.filter_by(id=venue_id).delete()
+    db.session.commit()
+    flash('Venue was successfully deleted!')
+  except:
+    error=True
+    db.session.rollback()
+    print(sys.exc_info())
+    flash('There was an error. The venue was not deleted!')
+  finally:
+    db.session.close()
+
+  return render_template('pages/venues.html')
 
 #  Artists
 #  ----------------------------------------------------------------
