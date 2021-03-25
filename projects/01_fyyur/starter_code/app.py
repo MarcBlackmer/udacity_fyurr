@@ -36,8 +36,8 @@ migrate = Migrate(app, db)
 shows = db.Table('show',
     db.Column('id', db.Integer, primary_key=True),
     db.Column('date', db.DateTime(), nullable=False),
-#    db.Column('band', db.Integer, db.ForeignKey('artist.id'), primary_key=True),
-#    db.Column('venue', db.Integer, db.ForeignKey('venue.id'), primary_key=True),
+    db.Column('artist', db.Integer, db.ForeignKey('artist.id'), primary_key=True),
+    db.Column('venue', db.Integer, db.ForeignKey('venue.id'), primary_key=True),
     )
 
 class Venue(db.Model):
@@ -55,7 +55,7 @@ class Venue(db.Model):
     website_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, default=True)
     seeking_description = db.Column(db.String(500))
-#    shows = db.relationship('artist', secondary=shows, backref=db.backref('venue', lazy=True))
+    shows = db.relationship('artist', secondary=shows, backref=db.backref('venue', lazy=True))
 
     def __repr__(self):
         return f'<ID: { self.id }, Name: { self.name }, City: { self.city }, State: { self.state }>'
