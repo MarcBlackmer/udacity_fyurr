@@ -33,13 +33,6 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
-class Show(db.Model):
-    __tablename__ = 'shows'
-
-    artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'), primary_key=True)
-    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), primary_key=True)
-    start_time = db.Column(db.DateTime())
-
 class Venue(db.Model):
     __tablename__ = 'venue'
 
@@ -84,6 +77,17 @@ class Artist(db.Model):
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
+
+class Show(db.Model):
+    __tablename__ = 'shows'
+
+    id = db.Column(db.Integer, primary_key=True)
+    artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'))
+    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'))
+    start_time = db.Column(db.DateTime)
+
+    def __repr__(self):
+        return f'<ID: { self.id }, Artist: { self.artist_id }, Venue: { self.venue_id }, Time: { self.start_time }>'
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -347,6 +351,20 @@ def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
+  shows = Show.query.with_entities(Venue.id, Venue.name, Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).all()
+  #shows = Show.query.join(Artist).join(Venue).all()
+
+  data = []
+  for show in shows:
+    gig = {}
+    gig['venue_id'] = show[0]
+    gig['venue_name'] = show[1]
+    gig['artist_id'] = show[2]
+    gig['artist_name'] = show[3]
+    gig['artist_image_link'] = show[4]
+    gig['start_time'] = show[5].strftime('%Y-%m-%d %H:%M:%S')
+    data.append(gig)
+
   return render_template('pages/shows.html', shows=data)
 
 @app.route('/shows/create')
