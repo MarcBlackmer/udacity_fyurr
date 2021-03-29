@@ -125,7 +125,7 @@ def search_venues():
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
   search_term=request.form.get('search_term', '')
-  response=Venue.query.filter(Venue.name.like('%' + search_term + '%')).all()
+  response=Venue.query.filter(Venue.name.ilike('%' + search_term + '%')).all()
   return render_template('pages/search_venues.html', results=response, search_term=search_term)
 
 @app.route('/venues/<int:venue_id>')
@@ -257,7 +257,7 @@ def search_artists():
   # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
   # search for "band" should return "The Wild Sax Band".
   search_term=request.form.get('search_term', '')
-  response=Artist.query.filter(Artist.name.like('%' + search_term + '%')).all()
+  response=Artist.query.filter(Artist.name.ilike('%' + search_term + '%')).all()
   return render_template('pages/search_artists.html', results=response, search_term=search_term)
 
 @app.route('/artists/<int:artist_id>')
