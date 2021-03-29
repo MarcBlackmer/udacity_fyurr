@@ -15,6 +15,7 @@ from forms import *
 from flask_migrate import Migrate
 import psycopg2
 import sys
+from datetime import datetime, timedelta
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -128,16 +129,62 @@ def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  search_term=request.form.get('search_term', '')
-  response=Venue.query.filter(Venue.name.like('%' + search_term + '%')).all()
+  search_term = request.form.get('search_term', '')
+  response = Venue.query.filter(Venue.name.like('%' + search_term + '%')).all()
   return render_template('pages/search_venues.html', results=response, search_term=search_term)
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
-  venues=Venue.query.filter_by(id=venue_id).all()
-  return render_template('pages/show_venue.html', venues=venues)
+
+  venue = Venue.query.get(venue_id)
+
+  upcoming_shows = []
+  u = 0
+  new_shows = Show.query.with_entities(Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).filter(Venue.id == venue_id, Show.start_time >= datetime.today()).all()
+
+  for show in new_shows:
+      new_gigs = {}
+      u += 1
+      new_gigs['artist_id'] = show[0]
+      new_gigs['artist_name'] = show[1]
+      new_gigs['artist_image_link'] = show[2]
+      new_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
+      upcoming_shows.append(new_gigs)
+
+  past_shows = []
+  p=0
+  old_shows = Show.query.with_entities(Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).filter(Venue.id == venue_id, Show.start_time < datetime.today()).all()
+
+  for show in old_shows:
+      past_gigs = {}
+      p += 1
+      past_gigs['artist_id'] = show[0]
+      past_gigs['artist_name'] = show[1]
+      past_gigs['artist_image_link'] = show[2]
+      past_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
+      past_shows.append(past_gigs)
+
+  data = {
+    'id': venue.id,
+    'name': venue.name,
+    'address': venue.address,
+    'city': venue.city,
+    'state': venue.state,
+    'phone': venue.phone,
+    'website_link': venue.website_link,
+    'facebook_link': venue.facebook_link,
+    'seeking_talent': venue.seeking_talent,
+    'seeking_description': venue.seeking_description,
+    'image_link': venue.image_link,
+    'past_shows_count': p,
+    'past_shows': past_shows,
+    'upcoming_shows_count': u,
+    'upcoming_shows': upcoming_shows
+  }
+
+  return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
 #  ----------------------------------------------------------------
@@ -352,7 +399,6 @@ def shows():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
   shows = Show.query.with_entities(Venue.id, Venue.name, Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).all()
-  #shows = Show.query.join(Artist).join(Venue).all()
 
   data = []
   for show in shows:
@@ -362,7 +408,7 @@ def shows():
     gig['artist_id'] = show[2]
     gig['artist_name'] = show[3]
     gig['artist_image_link'] = show[4]
-    gig['start_time'] = show[5].strftime('%Y-%m-%d %H:%M:%S')
+    gig['start_time'] = show[5].strftime('%Y-%m-%d %H:%M')
     data.append(gig)
 
   return render_template('pages/shows.html', shows=data)
