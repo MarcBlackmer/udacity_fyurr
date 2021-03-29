@@ -140,29 +140,29 @@ def show_venue(venue_id):
 
   venue = Venue.query.get(venue_id)
 
-  shows = Show.query.with_entities(Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).filter(Venue.id == venue_id).all()
-  upcoming_shows = []
-  u = 0
+  old_shows = Show.query.with_entities(Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).filter(Venue.id == venue_id, Show.start_time < datetime.today()).all()
   past_shows = []
-  p=0
-  for show in shows:
-      if (Show.start_time < datetime.today()) == True:
-          past_gigs = {}
-          p += 1
-          past_gigs['artist_id'] = show[0]
-          past_gigs['artist_name'] = show[1]
-          past_gigs['artist_image_link'] = show[2]
-          past_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
-          past_shows.append(past_gigs)
+  p = 0
+  for show in old_shows:
+    past_gigs = {}
+    p += 1
+    past_gigs['artist_id'] = show[0]
+    past_gigs['artist_name'] = show[1]
+    past_gigs['artist_image_link'] = show[2]
+    past_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
+    past_shows.append(past_gigs)
 
-      else:
-          new_gigs = {}
-          u += 1
-          new_gigs['artist_id'] = show[0]
-          new_gigs['artist_name'] = show[1]
-          new_gigs['artist_image_link'] = show[2]
-          new_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
-          upcoming_shows.append(new_gigs)
+  new_shows = Show.query.with_entities(Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).filter(Venue.id == venue_id, Show.start_time >= datetime.today()).all()
+  upcoming_shows = []
+  u=0
+  for show in new_shows:
+    new_gigs = {}
+    u += 1
+    new_gigs['artist_id'] = show[0]
+    new_gigs['artist_name'] = show[1]
+    new_gigs['artist_image_link'] = show[2]
+    new_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
+    upcoming_shows.append(new_gigs)
 
   data = {
     'id': venue.id,
@@ -270,8 +270,50 @@ def search_artists():
 def show_artist(artist_id):
   # shows the artist page with the given artist_id
   # TODO: replace with real artist data from the artist table, using artist_id
-  artist = Artist.query.filter_by(id=artist_id).all()
-  return render_template('pages/show_artist.html', artists=artist)
+  artist = Artist.query.get(artist_id)
+
+  old_shows = Show.query.with_entities(Venue.id, Venue.name, Venue.image_link, Show.start_time).join(Venue).join(Artist).filter(Artist.id == artist_id, Show.start_time < datetime.today()).all()
+  past_shows = []
+  p=0
+  for show in old_shows:
+    past_gigs = {}
+    p += 1
+    past_gigs['venue_id'] = show[0]
+    past_gigs['venue_name'] = show[1]
+    past_gigs['venue_image_link'] = show[2]
+    past_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
+    past_shows.append(past_gigs)
+
+  new_shows = Show.query.with_entities(Venue.id, Venue.name, Venue.image_link, Show.start_time).join(Venue).join(Artist).filter(Artist.id == artist_id, Show.start_time >= datetime.today()).all()
+  upcoming_shows = []
+  u = 0
+  for show in new_shows:
+    new_gigs = {}
+    u += 1
+    new_gigs['venue_id'] = show[0]
+    new_gigs['venue_name'] = show[1]
+    new_gigs['venue_image_link'] = show[2]
+    new_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
+    upcoming_shows.append(new_gigs)
+
+  data = {
+    'id': artist.id,
+    'name': artist.name,
+    'city': artist.city,
+    'state': artist.state,
+    'phone': artist.phone,
+    'website_link': artist.website_link,
+    'facebook_link': artist.facebook_link,
+    'seeking_venue': artist.seeking_venue,
+    'seeking_description': artist.seeking_description,
+    'image_link': artist.image_link,
+    'past_shows_count': p,
+    'past_shows': past_shows,
+    'upcoming_shows_count': u,
+    'upcoming_shows': upcoming_shows
+  }
+
+  return render_template('pages/show_artist.html', artist=data)
 
 #  Update
 #  ----------------------------------------------------------------
