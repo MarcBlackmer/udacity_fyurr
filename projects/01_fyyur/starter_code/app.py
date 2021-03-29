@@ -140,31 +140,29 @@ def show_venue(venue_id):
 
   venue = Venue.query.get(venue_id)
 
+  shows = Show.query.with_entities(Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).filter(Venue.id == venue_id).all()
   upcoming_shows = []
   u = 0
-  new_shows = Show.query.with_entities(Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).filter(Venue.id == venue_id, Show.start_time >= datetime.today()).all()
-
-  for show in new_shows:
-      new_gigs = {}
-      u += 1
-      new_gigs['artist_id'] = show[0]
-      new_gigs['artist_name'] = show[1]
-      new_gigs['artist_image_link'] = show[2]
-      new_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
-      upcoming_shows.append(new_gigs)
-
   past_shows = []
   p=0
-  old_shows = Show.query.with_entities(Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).join(Artist).filter(Venue.id == venue_id, Show.start_time < datetime.today()).all()
+  for show in shows:
+      if (Show.start_time < datetime.today()) == True:
+          past_gigs = {}
+          p += 1
+          past_gigs['artist_id'] = show[0]
+          past_gigs['artist_name'] = show[1]
+          past_gigs['artist_image_link'] = show[2]
+          past_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
+          past_shows.append(past_gigs)
 
-  for show in old_shows:
-      past_gigs = {}
-      p += 1
-      past_gigs['artist_id'] = show[0]
-      past_gigs['artist_name'] = show[1]
-      past_gigs['artist_image_link'] = show[2]
-      past_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
-      past_shows.append(past_gigs)
+      else:
+          new_gigs = {}
+          u += 1
+          new_gigs['artist_id'] = show[0]
+          new_gigs['artist_name'] = show[1]
+          new_gigs['artist_image_link'] = show[2]
+          new_gigs['start_time'] = show[3].strftime('%d-%b-%Y %H:%M')
+          upcoming_shows.append(new_gigs)
 
   data = {
     'id': venue.id,
