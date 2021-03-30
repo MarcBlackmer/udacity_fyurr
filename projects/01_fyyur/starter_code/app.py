@@ -432,6 +432,19 @@ def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
+  shows=Show.query.with_entities(Venue.id, Venue.name, Artist.id, Artist.name, Artist.image_link, Show.start_time).join(Venue).filter(Show.start_time >= datetime.today()).all()
+
+  data = []
+  for show in shows:
+      gig = {}
+      gig['venue_id'] = show[0]
+      gig['venue_name'] = show[1]
+      gig['artist_id'] = show[2]
+      gig['artist_name'] = show[3]
+      gig['artist_image_link'] = show[4]
+      gig['start_time'] = show[5].strftime('%A %d-%b-%Y %H:%M')
+      data.append(gig)
+
   return render_template('pages/shows.html', shows=data)
 
 @app.route('/shows/create')
