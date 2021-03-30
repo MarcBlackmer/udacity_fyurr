@@ -15,7 +15,7 @@ from forms import *
 from flask_migrate import Migrate
 import psycopg2
 import sys
-import csv
+
 
 #----------------------------------------------------------------------------#
 # App Config.
