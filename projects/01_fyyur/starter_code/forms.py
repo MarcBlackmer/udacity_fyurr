@@ -95,8 +95,8 @@ class VenueForm(Form):
         choices=[
             ('Alternative', 'Alternative'),
             ('Blues', 'Blues'),
-            ('Classical', 'Classical'),
             ('Cabaret', 'Cabaret'),
+            ('Classical', 'Classical'),
             ('Country', 'Country'),
             ('Electronic', 'Electronic'),
             ('Folk', 'Folk'),
