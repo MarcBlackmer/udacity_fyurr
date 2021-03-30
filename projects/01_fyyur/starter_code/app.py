@@ -103,7 +103,7 @@ def show_venue(venue_id):
 
   upcoming_shows = []
   u = 0
-  
+
   for show in new_shows:
     new_gigs = {}
     u += 1
@@ -417,6 +417,7 @@ def shows():
   shows = (
     Show.query.with_entities(Venue.id, Venue.name, Artist.id, Artist.name, Artist.image_link, Show.start_time)
     .join(Venue)
+    .join(Artist)
     .filter(Show.start_time >= datetime.today())
     .all()
   )
