@@ -8,7 +8,6 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects.postgresql import ARRAY
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
@@ -16,6 +15,7 @@ from forms import *
 from flask_migrate import Migrate
 import psycopg2
 import sys
+import csv
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -50,7 +50,7 @@ class Venue(db.Model):
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.ARRAY(db.String(120)))
+    genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website_link = db.Column(db.String(120))
@@ -59,7 +59,7 @@ class Venue(db.Model):
     shows = db.relationship('Show', backref='venues', lazy=True)
 
     def __repr__(self):
-        return f'<ID: { self.id }, Name: { self.name }, City: { self.city }, State: { self.state }>'
+        return f'<ID: { self.id }, Name: { self.name }, Genres: { self.genres } City: { self.city }, State: { self.state }>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -71,7 +71,7 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.ARRAY(db.String(120)))
+    genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website_link = db.Column(db.String(120))
@@ -81,7 +81,7 @@ class Artist(db.Model):
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
     def __repr__(self):
-        return f'<ID: { self.id }, Name: { self.name }, City: { self.city }, State: { self.state }>'
+        return f'<ID: { self.id }, Name: { self.name }, Genres { self.genres } City: { self.city }, State: { self.state }>'
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
@@ -192,21 +192,11 @@ def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
   error=False
-  form=VenueForm()
+  form=VenueForm(request.form)
   try:
-    venue=Venue(
-      name=form.name.data,
-      city=form.city.data,
-      state=form.state.data,
-      address=form.address.data,
-      phone=form.phone.data,
-      genres=form.genres.data,
-      image_link=form.image_link.data,
-      facebook_link=form.facebook_link.data,
-      website_link=form.website_link.data,
-      seeking_talent=form.seeking_talent.data,
-      seeking_description=form.seeking_description.data)
-    db.session.add(venue)
+    venue_obj=Venue()
+    form.populate_obj(venue_obj)
+    db.session.add(venue_obj)
     db.session.commit()
     flash('Venue ' + request.form['name'] + ' was successfully listed!')
   except:
@@ -267,6 +257,7 @@ def show_artist(artist_id):
   # shows the artist page with the given artist_id
   # TODO: replace with real artist data from the artist table, using artist_id
   artist=Artist.query.get(artist_id)
+  genres=artist.genres.split(',')
 
   old_shows=Show.query.with_entities(Venue.id, Venue.name, Venue.image_link, Show.start_time).join(Artist).join(Venue).filter(Artist.id == artist_id, Show.start_time < datetime.today()).all()
   past_shows = []
@@ -317,7 +308,7 @@ def show_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   artist=Artist.query.get(artist_id)
-  form = ArtistForm()
+  form = ArtistForm(obj=artist)
   # TODO: populate form with fields from artist with ID <artist_id>
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
