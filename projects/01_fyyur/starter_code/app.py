@@ -148,11 +148,16 @@ def create_venue_submission():
   error=False
   form=VenueForm(request.form)
   try:
-    venue_obj=Venue()
-    form.populate_obj(venue_obj)
-    db.session.add(venue_obj)
-    db.session.commit()
-    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+    if form.validate_on_submit():
+      flash(form.name)
+      venue_obj=Venue()
+      form.populate_obj(venue_obj)
+      db.session.add(venue_obj)
+      db.session.commit()
+      flash('Venue ' + request.form['name'] + ' was successfully listed!')
+    else:
+      flash('Not validated  ')
+      print(form.errors)
   except:
     error=True
     db.session.rollback()
@@ -160,6 +165,7 @@ def create_venue_submission():
     flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed!')
   finally:
     db.session.close()
+
   # on successful db insert, flash success
 
   # TODO: on unsuccessful db insert, flash an error instead.
