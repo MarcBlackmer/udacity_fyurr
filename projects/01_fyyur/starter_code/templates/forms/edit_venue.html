@@ -2,6 +2,7 @@
 {% block title %}Edit Venue{% endblock %}
 {% block content %}
   <div class="form-wrapper">
+    {{ form.csrf_token }}
     <form id="form" class="form" method="post" action="/venues/{{venue.id}}/edit">
       <h3 class="form-heading">Edit venue <em>{{ venue.name }}</em> <a href="{{ url_for('index') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
       <div class="form-group">
@@ -25,7 +26,7 @@
       </div>
       <div class="form-group">
           <label for="phone">Phone</label>
-          {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true) }}
+          {{ form.phone(class_ = 'form-control', placeholder='(xxx) xxx-xxxx', autofocus = true) }}
         </div>
       <div class="form-group">
         <label for="genres">Genres</label>
@@ -34,17 +35,17 @@
       </div>
       <div class="form-group">
           <label for="facebook_link">Facebook Link</label>
-          {{ form.facebook_link(class_ = 'form-control', placeholder='http://', autofocus = true) }}
+          {{ form.facebook_link(class_ = 'form-control', placeholder='https://', autofocus = true) }}
        </div>
 
        <div class="form-group">
           <label for="image_link">Image Link</label>
-          {{ form.image_link(class_ = 'form-control', placeholder='http://', autofocus = true) }}
+          {{ form.image_link(class_ = 'form-control', placeholder='https://', autofocus = true) }}
        </div>
 
        <div class="form-group">
               <label for="website_link">Website Link</label>
-              {{ form.website_link(class_ = 'form-control', placeholder='http://', autofocus = true) }}
+              {{ form.website_link(class_ = 'form-control', placeholder='https://', autofocus = true) }}
         </div>
 
         <div class="form-group">
