@@ -149,13 +149,13 @@ def create_venue_submission():
   form=VenueForm(request.form)
   try:
     if form.validate_on_submit():
-      flash(form.name)
       venue_obj=Venue()
       form.populate_obj(venue_obj)
       db.session.add(venue_obj)
       db.session.commit()
       flash('Venue ' + request.form['name'] + ' was successfully listed!')
     else:
+      flash('Venue creation failed for the following reason(s): ')
       flash(form.errors)
   except:
     error=True
@@ -380,27 +380,21 @@ def create_artist_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
   error=False
-  form=ArtistForm()
+  form=ArtistForm(request.form)
   try:
-    artist=Artist(
-      name=form.name.data,
-      city=form.city.data,
-      state=form.state.data,
-      phone=form.phone.data,
-      genres=form.genres.data,
-      image_link=form.image_link.data,
-      facebook_link=form.facebook_link.data,
-      website_link=form.website_link.data,
-      seeking_venue=form.seeking_venue.data,
-      seeking_description=form.seeking_description.data)
-    db.session.add(artist)
-    db.session.commit()
-    flash('Artist ' + request.form['name'] + ' was successfully listed!')
+    if form.validate_on_submit():
+      artist_obj=Artist()
+      form.populate_obj(artist_obj)
+      db.session.add(artist_obj)
+      db.session.commit()
+      flash('Artist ' + request.form['name'] + ' was successfully listed!')
+    else:
+      flash('Artist creation failed for the following reason(s): ')
+      flash(form.errors)
   except:
     error=True
     db.session.rollback()
     print(sys.exc_info())
-    flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed!')
   finally:
     db.session.close()
   # on successful db insert, flash success

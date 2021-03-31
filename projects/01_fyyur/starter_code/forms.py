@@ -99,7 +99,7 @@ class VenueForm(Form):
         'phone', validators=[Regexp('^\(\d{3}\)\s\d{3}-\d{4}', message='Your telphone number format is invalid. Please use the format (xxx) xxx-xxxx')]
     )
     image_link = StringField(
-        'image_link', validators=[Optional(),URL()]
+        'image_link', validators=[Optional(),URL(message='Your image URL format is invalid. Please re-enter the address.')]
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
@@ -128,10 +128,10 @@ class VenueForm(Form):
         ]
     )
     facebook_link = StringField(
-        'facebook_link', validators=[Optional(),URL()]
+        'facebook_link', validators=[Optional(),URL(message='Your Facebook URL format is invalid. Please re-enter the address.')]
     )
     website_link = StringField(
-        'website_link', validators=[Optional(),URL()]
+        'website_link', validators=[Optional(),URL(message='Your website URL format is invalid. Please re-enter the address.')]
     )
 
     seeking_talent = BooleanField( 'seeking_talent' )
@@ -210,7 +210,7 @@ class ArtistForm(Form):
         'phone', validators=[Regexp('^\(\d{3}\)\s\d{3}-\d{4}', message='Your telphone number format is invalid. Please use the format (xxx) xxx-xxxx')]
     )
     image_link = StringField(
-        'image_link', validators=[Optional(),URL()]
+        'image_link', validators=[Optional(),URL(message='Your image URL format is invalid. Please re-enter the address.')]
     )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
@@ -238,11 +238,11 @@ class ArtistForm(Form):
      )
     facebook_link = StringField(
         # TODO implement enum restriction
-        'facebook_link', validators=[Optional(),URL()]
+        'facebook_link', validators=[Optional(),URL(message='Your Facebook URL format is invalid. Please re-enter the address.')]
      )
 
     website_link = StringField(
-        'website_link', validators=[Optional(),URL()]
+        'website_link', validators=[Optional(),URL(message='Your website URL format is invalid. Please re-enter the address.')]
      )
 
     seeking_venue = BooleanField( 'seeking_venue' )
