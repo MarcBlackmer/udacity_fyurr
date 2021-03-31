@@ -311,23 +311,26 @@ def edit_artist_submission(artist_id):
   artist=Artist.query.get(artist_id)
   form=ArtistForm(obj=artist)
   try:
-    artist.name=form.name.data
-    artist.city=form.city.data
-    artist.state=form.state.data
-    artist.phone=form.phone.data
-    artist.genres=form.genres.data
-    artist.image_link=form.image_link.data
-    artist.facebook_link=form.facebook_link.data
-    artist.website_link=form.website_link.data
-    artist.seeking_venue=form.seeking_venue.data
-    artist.seeking_description=form.seeking_description.data
-    db.session.commit()
-    flash('Artist ' + request.form['name'] + ' was successfully updated!')
+    if form.validate_on_submit():
+      artist.name=form.name.data
+      artist.city=form.city.data
+      artist.state=form.state.data
+      artist.phone=form.phone.data
+      artist.genres=form.genres.data
+      artist.image_link=form.image_link.data
+      artist.facebook_link=form.facebook_link.data
+      artist.website_link=form.website_link.data
+      artist.seeking_venue=form.seeking_venue.data
+      artist.seeking_description=form.seeking_description.data
+      db.session.commit()
+      flash(request.form['name'] + ' was successfully updated!')
+    else:
+      flash('Artist edit failed for the following reason(s): ')
+      flash(form.errors)
   except:
     error=True
     db.session.rollback()
     print(sys.exc_info())
-    flash('An error occurred. Artist ' + request.form['name'] + ' could not be updated!')
   finally:
     db.session.close()
   return redirect(url_for('show_artist', artist_id=artist_id))
@@ -344,18 +347,23 @@ def edit_venue_submission(venue_id):
   venue = Venue.query.get(venue_id)
   form = VenueForm(obj=venue)
   try:
-    venue.name=form.name.data
-    venue.city=form.city.data
-    venue.state=form.state.data
-    venue.address=form.address.data
-    venue.phone=form.phone.data
-    venue.genres=form.genres.data
-    venue.image_link=form.image_link.data
-    venue.facebook_link=form.facebook_link.data
-    venue.website_link=form.website_link.data
-    venue.seeking_talent=form.seeking_talent.data
-    venue.seeking_description=form.seeking_description.data
-    db.session.commit()
+    if form.validate_on_submit():
+      venue.name=form.name.data
+      venue.city=form.city.data
+      venue.state=form.state.data
+      venue.address=form.address.data
+      venue.phone=form.phone.data
+      venue.genres=form.genres.data
+      venue.image_link=form.image_link.data
+      venue.facebook_link=form.facebook_link.data
+      venue.website_link=form.website_link.data
+      venue.seeking_talent=form.seeking_talent.data
+      venue.seeking_description=form.seeking_description.data
+      flash(request.form['name'] + ' was successfully updated!')
+      db.session.commit()
+    else:
+      flash('Venue edit failed for the following reason(s): ')
+      flash(form.errors)
   except:
     error=True
     db.session.rollback()
@@ -445,18 +453,21 @@ def create_show_submission():
   error=False
   form=ShowForm()
   try:
-    show=Show(
-      artist_id=form.artist_id.data,
-      venue_id=form.venue_id.data,
-      start_time=form.start_time.data)
-    db.session.add(show)
-    db.session.commit()
-    flash('Show was successfully listed!')
+    if form.validate_on_submit():
+      show=Show(
+        artist_id=form.artist_id.data,
+        venue_id=form.venue_id.data,
+        start_time=form.start_time.data)
+      db.session.add(show)
+      db.session.commit()
+      flash('Show was successfully listed!')
+    else:
+      flash('Show creation failed for the following reason(s): ')
+      flash(form.errors)
   except:
     error=True
     db.session.rollback()
     print(sys.exc_info())
-    flash('There was an error. The show was not listed!')
   finally:
     db.session.close()
   # on successful db insert, flash success
