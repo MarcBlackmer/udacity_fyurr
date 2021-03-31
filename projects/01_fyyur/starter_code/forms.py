@@ -26,6 +26,7 @@ class ShowForm(Form):
     start_time = DateTimeField(
         'start_time',
         validators=[DataRequired()],
+        format='%d-%b-%Y %H:%M',
         default= datetime.today()
     )
 
