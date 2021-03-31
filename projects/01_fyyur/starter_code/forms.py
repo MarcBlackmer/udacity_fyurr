@@ -12,7 +12,8 @@ from wtforms.validators import (
     AnyOf,
     URL,
     Email,
-    Optional
+    Optional,
+    Regexp
 )
 
 class ShowForm(Form):
@@ -95,7 +96,7 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone', validators=[Regexp('^\(\d{3}\)\s\d{3}-\d{4}', message='Your telphone number format is invalid. Please use the format (xxx) xxx-xxxx')]
     )
     image_link = StringField(
         'image_link', validators=[Optional(),URL()]
@@ -206,7 +207,7 @@ class ArtistForm(Form):
     )
     phone = StringField(
         # TODO implement validation logic for state
-        'phone'
+        'phone', validators=[Regexp('^\(\d{3}\)\s\d{3}-\d{4}', message='Your telphone number format is invalid. Please use the format (xxx) xxx-xxxx')]
     )
     image_link = StringField(
         'image_link', validators=[Optional(),URL()]
